@@ -1,0 +1,29 @@
+
+using UnityEngine;
+
+public class PowerUpController : MonoBehaviour    
+{
+    private float timer;
+    private Vector3 powerUpPos;
+    private float distanz = 0.35f;
+
+    [SerializeField] private float rotateSpeed = 300;
+    [SerializeField] private float upDownSpeed = 1f;
+    [SerializeField] private float offset = 1f;
+
+
+    private void Start()
+    {
+        powerUpPos = transform.position;
+    }
+
+    void Update()
+    {
+
+        timer += Time.deltaTime;
+        float sin = Mathf.Sin(timer * upDownSpeed);
+
+        transform.eulerAngles += Vector3.up*rotateSpeed*Time.deltaTime;
+        transform.position = powerUpPos + (Vector3.up * sin * distanz) + Vector3.up * offset;
+    }
+}
