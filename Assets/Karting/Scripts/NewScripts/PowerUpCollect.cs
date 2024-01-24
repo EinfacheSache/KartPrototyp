@@ -8,8 +8,12 @@ using UnityEngine;
 public class PowerUpCollect : MonoBehaviour
 {
 
+
     public int powerUpCount;
 
+
+    private GameObject shootedPowerUp;
+    private bool powerUpCooldown;
     private float timer;
     private GameObject collectedPowerUp;
     private float rotateSpeed = 500;
@@ -40,6 +44,7 @@ public class PowerUpCollect : MonoBehaviour
     void Update()
     {
         CollectedPowerUpRotation();
+        ShotedPowerUp();
     }
 
     private void FixedUpdate()
@@ -58,7 +63,14 @@ public class PowerUpCollect : MonoBehaviour
             return;
         }
 
-        if (collectedPowerUp != null)
+        if (powerUpCooldown)
+        {
+            return;
+        }
+
+        powerUpCooldown = true;
+
+        if (collectedPowerUp != null && collectedPowerUp.GetComponent<Renderer>().material.color != Color.yellow)
         {
             Destroy(collectedPowerUp);
         }
@@ -84,9 +96,13 @@ public class PowerUpCollect : MonoBehaviour
             multi = goodPowerUpLastPlayerMulti;
         }else
             multi = goodPowerUpFirstPlayerMulti;
-        
 
-        if (Random.Range(0, 101) <= 100 * multi)
+        float random = (Random.Range(0, 100));
+
+        if(random < 5 && shootedPowerUp == null) {
+            collectedPowerUp.GetComponent<Renderer>().material.color = Color.yellow;
+        }
+        else if (random <= 100 * multi)
         {
             collectedPowerUp.GetComponent<Renderer>().material.color = Color.green;
             gameObject.GetComponent<ArcadeKart>().baseStats.TopSpeed = powerUpSpeedBoosted;
@@ -102,26 +118,30 @@ public class PowerUpCollect : MonoBehaviour
         collider.GetComponent<MeshRenderer>().enabled = false;
         collider.GetComponent<CapsuleCollider>().enabled = false;
 
+        StartCoroutine(PowerUpCooldown());
+
         Destroy(vfx, 1);
+
+        if(collectedPowerUp.GetComponent<Renderer>().material.color == Color.yellow)
+        {
+            StartCoroutine(ShotTimer(collectedPowerUp));
+            return;
+        }
+
         Destroy(collectedPowerUp, powerUpSpeedTime);
-
-        StartCoroutine(respawnTimer(collider));
+       
     }
 
-
-
-    private IEnumerator respawnTimer(Collider collider)
-    {
-        yield return new WaitForSeconds(8);
-
-        collider.GetComponent<MeshRenderer>().enabled = true;
-        collider.GetComponent<CapsuleCollider>().enabled = true;
-
-    }
+    float hitTime = 0;
 
     void CollectedPowerUpRotation()
     {
         if(collectedPowerUp == null)
+        {
+            return;
+        }
+
+        if (collectedPowerUp.GetComponent<Renderer>().material.color == Color.yellow && shootedPowerUp != null)
         {
             return;
         }
@@ -131,5 +151,35 @@ public class PowerUpCollect : MonoBehaviour
 
         collectedPowerUp.transform.eulerAngles += Vector3.up * rotateSpeed * Time.deltaTime;
         collectedPowerUp.transform.position = gameObject.transform.position + (Vector3.up * sin * distanz) + Vector3.up * offset;
+    }
+
+
+
+    void ShotedPowerUp()
+    {
+
+        if (shootedPowerUp != null)
+        {
+
+            hitTime += Time.deltaTime;
+
+            shootedPowerUp.transform.position = Vector3.Lerp(shootedPowerUp.transform.position, otherPlayer.transform.position, hitTime / 15);
+            return;
+        }
+    }
+
+
+    private IEnumerator ShotTimer(GameObject powerUp)
+    {
+        yield return new WaitForSeconds(2);
+        shootedPowerUp = powerUp;
+        shootedPowerUp.layer = 15;
+    }
+
+    private IEnumerator PowerUpCooldown()
+    {
+        yield return new WaitForSeconds(2);
+
+        powerUpCooldown = false;
     }
 }

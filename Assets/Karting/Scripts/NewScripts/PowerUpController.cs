@@ -1,4 +1,5 @@
 
+using System.Collections;
 using UnityEngine;
 
 public class PowerUpController : MonoBehaviour    
@@ -25,5 +26,18 @@ public class PowerUpController : MonoBehaviour
 
         transform.eulerAngles += Vector3.up*rotateSpeed*Time.deltaTime;
         transform.position = powerUpPos + (Vector3.up * sin * distanz) + Vector3.up * offset;
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        StartCoroutine(respawnTimer(collider));
+    }
+
+    private IEnumerator respawnTimer(Collider collider)
+    {
+        yield return new WaitForSeconds(8);
+
+        gameObject.GetComponent<MeshRenderer>().enabled = true;
+        gameObject.GetComponent<CapsuleCollider>().enabled = true;
     }
 }
