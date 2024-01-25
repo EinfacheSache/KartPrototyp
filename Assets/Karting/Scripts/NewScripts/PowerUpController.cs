@@ -6,11 +6,11 @@ public class PowerUpController : MonoBehaviour
 {
     private float timer;
     private Vector3 powerUpPos;
-    private float distanz = 0.35f;
 
+    [SerializeField] private float distanz = 0.225f;
     [SerializeField] private float rotateSpeed = 300;
     [SerializeField] private float upDownSpeed = 1f;
-    [SerializeField] private float offset = 1f;
+    [SerializeField] private float offset = 0.5f;
 
 
     private void Start()

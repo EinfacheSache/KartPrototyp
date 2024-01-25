@@ -37,6 +37,15 @@ public class GameModeController : MonoBehaviour
             secondPlayerTimeText.SetText(secondPlayerTimeText.getTimeString(45));
             selectionFinisched = true;
         }
+        else if (value == 3)
+        {
+            Debug.Log("LapsMaster");
+
+            gameMode = GameMode.LapsMaster;
+            firstPlayerTimeText.SetText("0 / 5");
+            secondPlayerTimeText.SetText("0 / 5");
+            selectionFinisched = true;
+        }
 
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
     }
@@ -45,7 +54,8 @@ public class GameModeController : MonoBehaviour
     {
         None,
         PowerRush,
-        KingOfTheHill
+        KingOfTheHill,
+        LapsMaster
     }
 
     public static GameMode GetGameMode()

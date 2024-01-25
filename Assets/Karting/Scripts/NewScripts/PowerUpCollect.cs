@@ -49,7 +49,7 @@ public class PowerUpCollect : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (collectedPowerUp == null) {
+        if (collectedPowerUp == null && gameObject.GetComponent<ArcadeKart>().baseStats.TopSpeed != 5) {
             gameObject.GetComponent<ArcadeKart>().baseStats.TopSpeed = 20;
         }
     }
@@ -162,9 +162,7 @@ public class PowerUpCollect : MonoBehaviour
         {
 
             hitTime += Time.deltaTime;
-
             shootedPowerUp.transform.position = Vector3.Lerp(shootedPowerUp.transform.position, otherPlayer.transform.position, hitTime / 15);
-            return;
         }
     }
 
@@ -172,6 +170,7 @@ public class PowerUpCollect : MonoBehaviour
     private IEnumerator ShotTimer(GameObject powerUp)
     {
         yield return new WaitForSeconds(2);
+
         shootedPowerUp = powerUp;
         shootedPowerUp.layer = 15;
     }

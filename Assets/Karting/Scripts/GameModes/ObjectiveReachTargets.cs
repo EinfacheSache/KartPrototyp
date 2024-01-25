@@ -10,6 +10,10 @@ public class ObjectiveReachTargets : MonoBehaviour
     public static int playerWin;
     private float firstPlayerTime = 45;
     private float secondPlayerTime = 45;
+    private float firstPlayerLaps = 0;
+    private float secondPlayerLaps = 0;
+    private float firstPlayerLastProgress = 0;
+    private float secondPlayerLastProgress = 0;
     private int playerInLead = 0;
 
     [SerializeField] private GameObject[] players;
@@ -21,8 +25,12 @@ public class ObjectiveReachTargets : MonoBehaviour
         playerWin = 0;
     }
 
-    private void Update()        
+    private void Update()      
     {
+
+        int progressFirstPlayer = players[0].GetComponent<ResetController>().getCheckPointCount();
+        int progressSecondPlayer = players[1].GetComponent<ResetController>().getCheckPointCount();
+
         if (GameModeController.GetGameMode() == GameMode.PowerRush)
         {
             foreach (var player in players)
@@ -33,10 +41,9 @@ public class ObjectiveReachTargets : MonoBehaviour
                 }
             }
         }
+
         else if (GameModeController.GetGameMode() == GameMode.KingOfTheHill)
         {
-            int progressFirstPlayer = players[0].GetComponent<ResetController>().getCheckPointCount();
-            int progressSecondPlayer = players[1].GetComponent<ResetController>().getCheckPointCount();
 
             if(firstPlayerTime <= 0)
             {
@@ -73,6 +80,33 @@ public class ObjectiveReachTargets : MonoBehaviour
                     secondPlayerTime = secondPlayerTime - Time.deltaTime;
                     secondPlayerTimeText.SetText(secondPlayerTimeText.getTimeString(secondPlayerTime));
                 }
+            }
+        }else if(GameModeController.GetGameMode() == GameMode.LapsMaster)
+        {
+            if (firstPlayerLaps >= 5)
+            {
+                OnPlayerWin(players[0]);
+                return;
+            }
+            if (secondPlayerLaps >= 5)
+            {
+                OnPlayerWin(players[1]);
+                return;
+            }
+
+            if (progressFirstPlayer % 56 == 0 && firstPlayerLastProgress != progressFirstPlayer)
+            {
+
+
+                firstPlayerLaps++;
+                firstPlayerLastProgress = progressFirstPlayer;
+                firstPlayerTimeText.SetText(firstPlayerLaps + " / 5");
+            }
+            if (progressSecondPlayer % 56 == 0 && secondPlayerLastProgress != progressSecondPlayer)
+            {
+                secondPlayerLaps++; 
+                secondPlayerLastProgress = progressSecondPlayer;
+                secondPlayerTimeText.SetText(secondPlayerLaps + " / 5");
             }
         }
     }
